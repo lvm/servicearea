@@ -1,0 +1,73 @@
+version: '3.2'
+services:
+  db-mozio:
+    image: kartoza/postgis:13-3.1
+    restart: unless-stopped
+    container_name: db-mozio
+    env_file:
+     - ./docker.env
+    ports:
+     - "5432:5432"
+    restart: on-failure
+    networks:
+      - lvm_apps
+  redis-mozio:
+    image: "redis:5-alpine"
+    restart: unless-stopped
+    container_name: redis-mozio
+    volumes:
+      - ./local/redis/:/data/
+    networks:
+      - lvm_apps
+  worker-mozio:
+    restart: unless-stopped
+    command: ./entrypoint-celery-worker.sh
+    container_name: worker-mozio
+    image: lvm-mozio
+    env_file:
+     - ./docker.env
+    links:
+      - redis-mozio
+    volumes:
+      - .:/app/
+    networks:
+      - lvm_apps
+  beat-mozio:
+    restart: unless-stopped
+    command: ./entrypoint-celery-beat.sh
+    container_name: beat-mozio
+    image: lvm-mozio
+    env_file:
+     - ./docker.env
+    links:
+      - redis-mozio
+    volumes:
+      - .:/app/
+    networks:
+      - lvm_apps
+  mozio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    restart: unless-stopped
+    command: ./entrypoint.sh
+    image: lvm-mozio
+    container_name: mozio
+    env_file:
+     - ./docker.env
+    links:
+      - db-mozio
+      - redis-mozio
+    volumes:
+      - .:/app/
+    ports:
+      - "8000:8000"
+    networks:
+      - lvm_apps
+
+networks:
+  lvm_apps:
+    external: true
