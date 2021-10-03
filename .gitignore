@@ -1,7 +1,10 @@
 # local stuff.
 .bash_history
+.local/
+.ipython
 celerybeat.pid
 local/
+libs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
