@@ -1,4 +1,6 @@
 # local stuff.
+.bash_history
+celerybeat.pid
 local/
 
 # Byte-compiled / optimized / DLL files

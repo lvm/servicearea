@@ -6,3 +6,6 @@ celery==4.4.2
 gunicorn==20.0.2
 drf-yasg==1.17.1
 djangorestframework-gis==0.17.0
+django-phonenumber-field[phonenumberslite]==5.0.0
+world-class==0.0.8
+django-money==2.1

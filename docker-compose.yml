@@ -4,6 +4,9 @@ services:
     image: kartoza/postgis:13-3.1
     restart: unless-stopped
     container_name: db-mozio
+    volumes:
+      - .:/app/
+      - ./local/pg:/var/lib/postgresql/data
     env_file:
      - ./docker.env
     ports:
