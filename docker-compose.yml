@@ -22,32 +22,6 @@ services:
       - ./local/redis/:/data/
     networks:
       - lvm_apps
-  worker-mozio:
-    restart: unless-stopped
-    command: ./entrypoint-celery-worker.sh
-    container_name: worker-mozio
-    image: lvm-mozio
-    env_file:
-     - ./docker.env
-    links:
-      - redis-mozio
-    volumes:
-      - .:/app/
-    networks:
-      - lvm_apps
-  beat-mozio:
-    restart: unless-stopped
-    command: ./entrypoint-celery-beat.sh
-    container_name: beat-mozio
-    image: lvm-mozio
-    env_file:
-     - ./docker.env
-    links:
-      - redis-mozio
-    volumes:
-      - .:/app/
-    networks:
-      - lvm_apps
   mozio:
     build:
       context: .
