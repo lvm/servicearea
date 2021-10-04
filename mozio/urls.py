@@ -27,12 +27,12 @@ urlpatterns = [
     path("api/login/", obtain_auth_token, name="api_token_auth"),
     path("api/", include("mozio.apps.providers.urls")),
     re_path(
-        r"^api/swagger(?P<format>\.json|\.yaml)$",
+        r"^api/docs(?P<format>\.json|\.yaml)$",
         schema_view.without_ui(cache_timeout=0),
         name="schema-json",
     ),
     re_path(
-        r"^api/swagger/$",
+        r"^api/docs/$",
         schema_view.with_ui("swagger", cache_timeout=0),
         name="schema-swagger-ui",
     ),
