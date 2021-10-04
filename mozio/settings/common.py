@@ -133,7 +133,7 @@ REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.UserRateThrottle"],
     "DEFAULT_THROTTLE_RATES": {
-        "authenticated": "3600/hour",
+        "user": "3600/hour",
     },
 }
 

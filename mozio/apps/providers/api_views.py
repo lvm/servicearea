@@ -12,7 +12,7 @@ from django.views.decorators.cache import cache_page
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from rest_framework.filters import BaseFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 
 from mozio.apps.providers.models import Provider
 from mozio.apps.providers.models import ServiceArea
@@ -20,7 +20,7 @@ from mozio.apps.providers.serializers import ProviderSerializer
 from mozio.apps.providers.serializers import ServiceAreaSerializer
 
 
-class CoordsFilterBackend(BaseFilterBackend):
+class CoordsFilterBackend(DjangoFilterBackend):
     def get_schema_fields(self, view):
         return [
             coreapi.Field(name="lat", location="query", required=False, type="float"),
