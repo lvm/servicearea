@@ -12,8 +12,8 @@ from mozio.apps.utils.models import TimestampMixinModel
 
 
 class Provider(NamedMixinModel, TimestampMixinModel, models.Model):
-    LANG_CHOICES = ((l.code, l.name) for l in Languages())
-    CURR_CHOICES = ((c.code, c.name) for c in Currencies())
+    LANG_CHOICES = ((lang.code, lang.name) for lang in Languages())
+    CURR_CHOICES = ((curr.code, curr.name) for curr in Currencies())
 
     email = models.EmailField(_("Email"), max_length=255)
     phone_number = PhoneNumberField(_("Phone"), max_length=100)

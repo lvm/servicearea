@@ -1,10 +1,8 @@
-import re
 import json
 import random
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 
@@ -14,11 +12,15 @@ from pathlib import Path
 from world_class import Languages
 from world_class import Currencies
 
+from urllib.parse import urlencode
+
 
 def load_test_data():
+    """
+    Test data obtained from: https://datahub.io/core/geo-countries
+    """
     data_file = Path(__file__).parent / "test_data/countries_sample.geojson"
     data = json.load(open(data_file, "r"))
-    countries = {}
     return [
         {"name": d.get("properties").get("ADMIN"), "area": d.get("geometry")}
         for d in data
@@ -26,6 +28,10 @@ def load_test_data():
 
 
 class ProviderTestCase(APITestCase):
+    fixtures = [
+        Path(__file__).parent / "fixtures/servicearea.json",
+    ]
+
     def setUp(self):
         self.UserModel = get_user_model()
         self._username = "admin"
@@ -62,13 +68,14 @@ class ProviderTestCase(APITestCase):
         return self._choose_thing(Currencies()).code
 
     def _choose_price(self):
-        return round(random.uniform(100,10000), 4)
+        return round(random.uniform(100, 10000), 4)
 
     def _choose_provider(self):
         return self._choose_thing(self.provider_data)
 
     def _choose_area(self):
         return self._choose_thing(self.area_data)
+
     def _create_provider(self):
         data = self._choose_provider()
         return self.client.post(reverse("provider-list"), data=data)
@@ -136,3 +143,12 @@ class ProviderTestCase(APITestCase):
 
         response = self.client.delete(reverse("servicearea-detail", kwargs={"pk": pk}))
         self.assertEqual(response.status_code, 204)
+
+    def test_filter_servicearea_coords(self):
+        query_param = urlencode({"lat": -57.667236328124964, "lng": -51.33747566296519})
+        sarea_endpoint = reverse("servicearea-list")
+        response = self.client.get(f"{sarea_endpoint}?{query_param}")
+        json_ = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_.get("type"), "FeatureCollection")
+        self.assertEqual(len(json_.get("features")), 5)
