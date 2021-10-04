@@ -16,7 +16,6 @@ ALLOWED_HOSTS = [
     "*",
 ]
 
-
 # Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -29,6 +28,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "rest_framework_gis",
+    "drf_yasg",
     "mozio.apps.providers",
 ]
 
@@ -131,9 +131,50 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "rest_framework_gis.schema.GeoFeatureAutoSchema",
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.UserRateThrottle"],
+    "DEFAULT_THROTTLE_RATES": {
+        "authenticated": "3600/hour",
+    },
 }
-
 
 # Applicaton settings
 ENV_NAME = "Development"
 ADMIN_TITLE = "Mozio API"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
+        "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"},
+    },
+    "formatters": {
+        "custom_mozio": {
+            "format": "[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s"
+        }
+    },
+    "handlers": {
+        "console_mozio": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "custom_mozio",
+        },
+    },
+    "loggers": {
+        "django": {"handlers": ["console_mozio"], "level": "WARNING"},
+        "mozio": {"handlers": ["console_mozio"], "level": "DEBUG"},
+    },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "KEY_PREFIX": "moz_",
+    }
+}
+
+CACHE_TTL = 60 * 60
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"

@@ -24,12 +24,6 @@ class NamedMixinModel(models.Model):
     def __str__(self):
         return self.name
 
-    def url_app_model(self):
-        return "{}_{}".format(self._meta.app_label, self._meta.model_name)
-
-    def get_admin_url(self):
-        return reverse(f"admin:{self.url_app_model()}_change", args=[self.pk])
-
     def _generate_unique_slug(self, string):
         def now():
             return int(time.mktime(datetime.datetime.now().timetuple()))
